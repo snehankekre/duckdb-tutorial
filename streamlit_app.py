@@ -66,9 +66,15 @@ with st.sidebar.form(key="form", clear_on_submit=True):
     show_image(index)
 
     name = st.text_input(
-        "Image", value=datasets.load_digits().target[index], key="image", disabled=True
+        "Image",
+        value=datasets.load_digits().target[index],
+        key="image",
+        disabled=True,
+        help="Filename of the image to label",
     )
-    pet = st.text_input("Label", key="label")
+    pet = st.text_input(
+        "Label", key="label", help="What digit does this image represent?"
+    )
 
     btn = st.form_submit_button("Submit", on_click=submit)
 
