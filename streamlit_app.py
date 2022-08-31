@@ -19,14 +19,9 @@ def init_connection(database: str = "mydb.duckdb") -> DuckDBPyConnection:
     return conn
 
 
-def execute(query: str) -> DuckDBPyConnection:
+def run_query(query: str) -> DuckDBPyConnection:
     """Execute a query against the database."""
     return conn.execute(query)
-
-
-def run_query(query: str) -> pd.DataFrame:
-    """Run a query and return the results as a pandas DataFrame."""
-    return conn.execute(query).fetch_df()
 
 
 def show_image(index: int) -> None:
@@ -50,7 +45,7 @@ def load_data():
 
 def submit() -> None:
     """Callback that inserts a new row into the table on form submit."""
-    execute(
+    run_query(
         f"INSERT INTO mytable VALUES ('{st.session_state.image}', '{st.session_state.label}')"
     )
 
@@ -61,12 +56,12 @@ st.header("Data labeling with DuckDB and Streamlit")
 conn = init_connection()
 
 # Fetch table names.
-table = execute("SHOW TABLES").fetchone()
+table = run_query("SHOW TABLES").fetchone()
 
 # Create a table if it doesn't exist.
 if table is None or not "mytable" in table:
     create_table_query = "CREATE TABLE mytable (image varchar(80), label varchar(80));"
-    execute(create_table_query)
+    run_query(create_table_query)
 
 # Load the dataset to be labelled.
 digits = load_data()
@@ -90,8 +85,8 @@ with st.sidebar.form(key="form", clear_on_submit=True):
 
     btn = st.form_submit_button("Submit", on_click=submit)
 
-# Run a query and display the results.
-df = run_query("SELECT * from mytable")
+# Run a query, fetch the results and display them in a table.
+df = run_query("SELECT * from mytable").fetch_df()
 col1.dataframe(df)
 
 if len(df) > 0:
