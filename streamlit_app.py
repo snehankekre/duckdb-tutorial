@@ -8,6 +8,8 @@ from duckdb import DuckDBPyConnection
 from sklearn import datasets, metrics
 
 
+# Initialize connection.
+# Uses st.experimental_singleton to only run once.
 @st.experimental_singleton
 def init_connection(database: str = "mydb.duckdb") -> DuckDBPyConnection:
     """
@@ -18,14 +20,17 @@ def init_connection(database: str = "mydb.duckdb") -> DuckDBPyConnection:
 
 
 def execute(query: str) -> DuckDBPyConnection:
+    """Execute a query against the database."""
     return conn.execute(query)
 
 
 def run_query(query: str) -> pd.DataFrame:
+    """Run a query and return the results as a pandas DataFrame."""
     return conn.execute(query).fetch_df()
 
 
 def show_image(index: int) -> None:
+    """Show the image at the given index in the table."""
     fig, ax = plt.subplots()
     ax.matshow(
         datasets.load_digits().images[index],
@@ -39,10 +44,12 @@ def show_image(index: int) -> None:
 
 @st.experimental_singleton
 def load_data():
+    """Load and cache the dataset to be labelled."""
     return datasets.load_digits()
 
 
 def submit() -> None:
+    """Callback that inserts a new row into the table on form submit."""
     execute(
         f"INSERT INTO mytable VALUES ('{st.session_state.image}', '{st.session_state.label}')"
     )
@@ -50,13 +57,18 @@ def submit() -> None:
 
 st.header("Data labeling with DuckDB and Streamlit")
 
+# Initialize connection.
 conn = init_connection()
+
+# Fetch table names.
 table = execute("SHOW TABLES").fetchone()
 
+# Create a table if it doesn't exist.
 if table is None or not "mytable" in table:
     create_table_query = "CREATE TABLE mytable (image varchar(80), label varchar(80));"
     execute(create_table_query)
 
+# Load the dataset to be labelled.
 digits = load_data()
 index = random.randint(0, len(digits.data))
 
@@ -78,8 +90,8 @@ with st.sidebar.form(key="form", clear_on_submit=True):
 
     btn = st.form_submit_button("Submit", on_click=submit)
 
+# Run a query and display the results.
 df = run_query("SELECT * from mytable")
-
 col1.dataframe(df)
 
 if len(df) > 0:
