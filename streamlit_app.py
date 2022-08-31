@@ -2,7 +2,6 @@ import random
 
 import duckdb
 import matplotlib.pyplot as plt
-import pandas as pd
 import streamlit as st
 from duckdb import DuckDBPyConnection
 from sklearn import datasets, metrics
@@ -23,6 +22,7 @@ def run_query(query: str) -> DuckDBPyConnection:
     """Execute a query against the database."""
     return conn.execute(query)
 
+
 @st.experimental_singleton
 def load_data():
     """Load and cache the dataset to be labelled."""
@@ -37,6 +37,7 @@ def show_image(index: int) -> None:
         cmap=plt.cm.gray_r,
         interpolation="nearest",
     )
+    st.markdown("#### Image to be labelled")
     st.pyplot(fig)
     plt.cla()
     plt.close(fig)
