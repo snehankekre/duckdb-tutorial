@@ -23,6 +23,11 @@ def run_query(query: str) -> DuckDBPyConnection:
     """Execute a query against the database."""
     return conn.execute(query)
 
+@st.experimental_singleton
+def load_data():
+    """Load and cache the dataset to be labelled."""
+    return datasets.load_digits()
+
 
 def show_image(index: int) -> None:
     """Show the image at the given index in the table."""
@@ -35,12 +40,6 @@ def show_image(index: int) -> None:
     st.pyplot(fig)
     plt.cla()
     plt.close(fig)
-
-
-@st.experimental_singleton
-def load_data():
-    """Load and cache the dataset to be labelled."""
-    return datasets.load_digits()
 
 
 def submit() -> None:
