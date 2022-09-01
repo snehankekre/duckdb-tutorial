@@ -80,7 +80,11 @@ with st.sidebar.form(key="form", clear_on_submit=True):
         help="Filename of the image to label",
     )
     pet = st.number_input(
-        "Label", key="label", help="What digit does this image represent?"
+        "Label",
+        key="label",
+        min_value=0,
+        max_value=9,
+        help="What digit does this image represent?",
     )
 
     btn = st.form_submit_button("Submit", on_click=submit)
