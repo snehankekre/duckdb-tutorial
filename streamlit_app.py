@@ -79,7 +79,7 @@ with st.sidebar.form(key="form", clear_on_submit=True):
         disabled=True,
         help="Filename of the image to label",
     )
-    pet = st.text_input(
+    pet = st.number_input(
         "Label", key="label", help="What digit does this image represent?"
     )
 
